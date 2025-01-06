@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>a Gift</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;700&family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background: #0a0a0a;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        #scene-container {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            display: none;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        /* Enhanced Loading Screen */
+        .loading-screen {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 3px solid transparent;
+            border-top-color: var(--theme-color, #ff69b4);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: relative;
+        }
+
+        .loader:before, .loader:after {
+            content: '';
+            position: absolute;
+            border: 3px solid transparent;
+            border-radius: 50%;
+        }
+
+        .loader:before {
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border-top-color: var(--theme-color, #ff69b4);
+            animation: spin 2s linear infinite;
+        }
+
+        .loader:after {
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border-top-color: var(--theme-color, #ff69b4);
+            animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 900;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .typing-container {
+            position: relative;
+            min-height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .typing-text {
+            font-family: 'Bodoni Moda', serif;
+            font-size: 2.8em;
+            white-space: nowrap;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 2.8em;
+            background-color: var(--theme-color, #ff69b4);
+            margin-left: 5px;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+.color-palette {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none; /* This prevents any interaction */
+}
+
+.color-palette.active {
+    pointer-events: auto; /* This enables interaction */
+}
+
+        .color-button {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            background: transparent;
+            border: 2px solid;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .color-button:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: currentColor;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: width 0.6s ease, height 0.6s ease, opacity 0.3s ease;
+        }
+
+        .color-button:hover:before {
+            width: 200px;
+            height: 200px;
+            opacity: 0.1;
+        }
+
+        .color-button:hover {
+            transform: translateY(-3px);
+            letter-spacing: 3px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Main Interface */
+        .interface {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .meaning-button {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            background: transparent;
+            border: 1px solid rgba(255,105,180,0.3);
+            color: var(--theme-color, #ff69b4);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 300;
+            font-size: 1rem;
+            pointer-events: auto;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+        }
+
+        .meaning-button:hover {
+            transform: translateX(-50%) translateY(-3px);
+            letter-spacing: 3px;
+            background: rgba(255,105,180,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Enhanced Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: rgba(10,10,10,0.95);
+            border: 10px solid rgba(255,105,180,0.3);
+            padding: 40px;
+            border-radius: 20px;
+            z-index: 100;
+            max-width: 500px;
+            width: 90%;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .modal.active {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+
+        .modal h2 {
+            font-family: 'Bodoni Moda', serif;
+            color: var(--theme-color, #ff69b4);
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .modal p {
+            color: rgba(255,255,255,0.9);
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 99;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            backdrop-filter: blur(3px);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: var(--theme-color, #ff69b4);
+            font-size: 1.8em;
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-button:hover {
+            transform: rotate(90deg);
+            background: rgba(255,105,180,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .typing-text {
+                font-size: 2em;
+                padding: 0 20px;
+            }
+
+            .color-palette {
+                grid-template-columns: repeat(2, 1fr);
+                padding: 0 20px;
+                gap: 1rem;
+            }
+
+            .color-button {
+                padding: 12px 24px;
+                font-size: 0.9rem;
+            }
+
+            .modal {
+                padding: 30px;
+            }
+
+            .modal h2 {
+                font-size: 1.8em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .typing-text {
+                font-size: 1.6em;
+            }
+
+            .color-palette {
+                grid-template-columns: 1fr;
+            }
+        }
+.interface p {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 300;
+    pointer-events: none;
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
+    backdrop-filter: blur(5px);
+    transition: opacity 0.3s ease;
+}
+
+.interface p:hover {
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    .interface p {
+        font-size: 0.8rem;
+        padding: 8px 16px;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcome-screen">
+        <div class="typing-container">
+            <div class="typing-text" id="typing-text"></div>
+            <span class="cursor"></span>
+        </div>
+        <div class="color-palette" id="color-palette">
+            <button class="color-button" style="color: #ff69b4; border-color: #ff69b4;" data-color="#ff69b4">Pink</button>
+            <button class="color-button" style="color: #4CAF50; border-color: #4CAF50;" data-color="#4CAF50">Green</button>
+            <button class="color-button" style="color: #2196F3; border-color: #2196F3;" data-color="#2196F3">Blue</button>
+            <button class="color-button" style="color: #FFC107; border-color: #FFC107;" data-color="#FFC107">Yellow</button>
+            <button class="color-button" style="color: #9C27B0; border-color: #9C27B0;" data-color="#9C27B0">Purple</button>
+            <button class="color-button" style="color: #FF5722; border-color: #FF5722;" data-color="#FF5722">Orange</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="scene-container"></div>
+
+    <!-- Interface -->
+    <div class="interface" id="interface">
+        <button class="meaning-button" id="meaning-button">Discover Meaning</button>
+        <p>Use touch to move around.</p>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal-overlay"></div>
+    <div class="modal" id="modal">
+        <h2>Simron</h2>
+        <p>Simron, derived from the Hebrew name Simronh, carries the noble meaning of "princess" or "lady of nobility." Throughout history, this name has been associated with grace, wisdom, and inner strength.</p>
+        <p>In various cultures, Simron represents different beautiful meanings: in Persian, it means "pure and excellent"; in Arabic traditions, it symbolizes joy and delight; and in its Hebrew origins, it represents a woman of high rank and spiritual significance.</p>
+        <h3><bold>Made by Saswat :)</bold></h3>
+        <button class="close-button" id="close-modal">&times;</button>
+    </div>
+
+<script>
+// Global variables for scene management
+let scene, camera, renderer;
+let text, particles = [];
+let autoRotate = true;
+let cameraRotationRadius = 20;
+let cameraHeight = 0;
+let cameraAngle = 0;
+let targetCameraAngle = 0;
+let cameraSpeed = 0.009;
+let isDragging = false;
+let mouseStart = { x: 0, y: 0 };
+let selectedColor = '#ff69b4'; // Default color
+
+// Configuration
+const config = {
+    welcomeText: "Welcome Simron, choose your fav color",
+    typingInitialDelay: 1000,
+    minTypingDelay: 10,
+    maxTypingDelay: 100,
+    showColorPaletteDelay: 500
+};
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', initializeApplication);
+
+function initializeApplication() {
+    setTimeout(() => {
+        document.getElementById('loading-screen').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('loading-screen').style.display = 'none';
+            showWelcomeScreen();
+        }, 500);
+    }, 1000);
+}
+
+function showWelcomeScreen() {
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const typingText = document.getElementById('typing-text');
+    const colorPalette = document.getElementById('color-palette');
+    
+    welcomeScreen.style.display = 'flex';
+    setTimeout(() => welcomeScreen.style.opacity = '1', 50);
+
+    let charIndex = 0;
+    typingText.style.opacity = '1';
+    typingText.style.transform = 'translateY(0)';
+
+    function typeNextChar() {
+        if (charIndex < config.welcomeText.length) {
+            typingText.textContent = config.welcomeText.slice(0, charIndex + 1);
+            charIndex++;
+            setTimeout(typeNextChar, Math.random() * 90 + 10);
+        } else {
+            setTimeout(() => {
+                colorPalette.style.opacity = '1';
+                colorPalette.style.transform = 'translateY(0)';
+                colorPalette.classList.add('active'); // Enable interaction after typing
+            }, 500);
+        }
+    }
+
+    setTimeout(typeNextChar, 1000);
+}
+
+// Initialize Three.js scene
+function initScene() {
+    const loadingScreen = document.getElementById('loading-screen');
+    loadingScreen.style.display = 'flex';
+    loadingScreen.style.opacity = '1';
+
+    scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x000000, 0.015); // Darker fog
+    
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    
+    renderer = new THREE.WebGLRenderer({ 
+        antialias: true,
+        alpha: true
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setClearColor(0x000000, 1); // Set black background
+    
+    const container = document.getElementById('scene-container');
+    container.appendChild(renderer.domElement);
+
+    createBackground();
+    setupLighting();
+    camera.position.z = cameraRotationRadius;
+    loadText();
+    setupEventListeners();
+    
+    container.style.display = 'block';
+    setTimeout(() => {
+        container.style.opacity = '1';
+        document.getElementById('interface').style.opacity = '1';
+    }, 100);
+
+    setTimeout(() => {
+        loadingScreen.style.opacity = '0';
+        setTimeout(() => {
+            loadingScreen.style.display = 'none';
+        }, 500);
+    }, 1000);
+}
+
+function createBackground() {
+    // Create gradient background sphere
+    const geometry = new THREE.SphereGeometry(100, 64, 64);
+    const vertexShader = `
+        varying vec3 vPosition;
+        void main() {
+            vPosition = position;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `;
+    
+    const fragmentShader = `
+        varying vec3 vPosition;
+        void main() {
+            float y = normalize(vPosition).y * 0.5 + 0.5;
+            vec3 skyBlue = vec3(0.0, 0.1, 0.2);
+            vec3 black = vec3(0.0, 0.0, 0.0);
+            gl_FragColor = vec4(mix(black, skyBlue, y * 0.5), 1.0);
+        }
+    `;
+
+    const material = new THREE.ShaderMaterial({
+        side: THREE.BackSide,
+        vertexShader,
+        fragmentShader
+    });
+
+    const backgroundSphere = new THREE.Mesh(geometry, material);
+    scene.add(backgroundSphere);
+
+    // Add stars
+    const starGeometry = new THREE.BufferGeometry();
+    const starVertices = [];
+    for (let i = 0; i < 5000; i++) {
+        const r = 90;
+        const theta = 2 * Math.PI * Math.random();
+        const phi = Math.acos(2 * Math.random() - 1);
+        const x = r * Math.sin(phi) * Math.cos(theta);
+        const y = r * Math.sin(phi) * Math.sin(theta);
+        const z = r * Math.cos(phi);
+        starVertices.push(x, y, z);
+    }
+    starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+    
+    const starMaterial = new THREE.PointsMaterial({
+        color: 0xFFFFFF,
+        size: 0.2,
+        transparent: true,
+        opacity: 0.8,
+        sizeAttenuation: true
+    });
+
+    const stars = new THREE.Points(starGeometry, starMaterial);
+    scene.add(stars);
+}
+
+function setupLighting() {
+    // Ambient light for overall illumination
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+    scene.add(ambientLight);
+
+    // Main directional light
+    const mainLight = new THREE.DirectionalLight(0xffffff, 1);
+    mainLight.position.set(1, 1, 1);
+    scene.add(mainLight);
+
+    // Back light for depth
+    const backLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    backLight.position.set(-1, 1, -1);
+    scene.add(backLight);
+
+    // Add a subtle rim light
+    const rimLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    rimLight.position.set(0, 0, -1);
+    scene.add(rimLight);
+}
+
+function loadText() {
+    const loader = new THREE.FontLoader();
+    loader.load('https://threejs.org/examples/fonts/optimer_bold.typeface.json', function(font) {
+        const textGeometry = new THREE.TextGeometry('Simron :)', {
+            font: font,
+            size: 4,
+            height: 1.5,
+            curveSegments: 32,
+            bevelEnabled: true,
+            bevelThickness: 0.3,
+            bevelSize: 0.15,
+            bevelOffset: 0,
+            bevelSegments: 8
+        });
+
+        // Create materials for different parts of the text
+        const frontMaterial = new THREE.MeshPhysicalMaterial({
+            color: selectedColor,
+            emissive: selectedColor,
+            emissiveIntensity: 0.4,
+            metalness: 0.9,
+            roughness: 0.1,
+            reflectivity: 1
+        });
+
+        const sideMaterial = new THREE.MeshPhysicalMaterial({
+            color: selectedColor,
+            emissive: selectedColor,
+            emissiveIntensity: 0.2,
+            metalness: 1.6,
+            roughness: 0.4,
+            reflectivity: 0.5
+        });
+
+        // Apply materials to text
+        text = new THREE.Mesh(textGeometry, [frontMaterial, sideMaterial]);
+        textGeometry.center();
+        scene.add(text);
+
+        createParticles();
+        animate();
+    });
+}
+
+function createParticles() {
+    particles.forEach(particle => scene.remove(particle.mesh));
+    particles = [];
+
+    for (let i = 0; i < 200; i++) {
+        particles.push(new Particle());
+    }
+}
+
+class Particle {
+    constructor() {
+        const geometry = new THREE.SphereGeometry(0.05, 8, 8);
+        const material = new THREE.MeshPhysicalMaterial({
+            color: selectedColor,
+            emissive: selectedColor,
+            emissiveIntensity: 0.8,
+            metalness: 0.5,
+            roughness: 0.5,
+            transparent: true,
+            opacity: Math.random() * 0.5 + 0.3
+        });
+        
+        this.mesh = new THREE.Mesh(geometry, material);
+        this.reset();
+        scene.add(this.mesh);
+    }
+
+    reset() {
+        const radius = Math.random() * 20 + 10;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.random() * Math.PI * 2;
+
+        this.mesh.position.x = radius * Math.sin(theta) * Math.cos(phi);
+        this.mesh.position.y = radius * Math.sin(theta) * Math.sin(phi);
+        this.mesh.position.z = radius * Math.cos(theta);
+
+        this.velocity = new THREE.Vector3(
+            (Math.random() - 0.5) * 0.08,
+            (Math.random() - 0.5) * 0.08,
+            (Math.random() - 0.5) * 0.08
+        );
+        
+        this.mesh.scale.setScalar(Math.random() * 0.5 + 0.5);
+    }
+
+    update() {
+        this.mesh.position.add(this.velocity);
+        
+        if (this.mesh.position.length() > 30) {
+            this.reset();
+        }
+    }
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+
+    if (!isDragging) {
+        targetCameraAngle += cameraSpeed;
+    }
+
+    cameraAngle += (targetCameraAngle - cameraAngle) * 0.1;
+    camera.position.x = cameraRotationRadius * Math.sin(cameraAngle);
+    camera.position.z = cameraRotationRadius * Math.cos(cameraAngle);
+    camera.position.y = cameraHeight;
+    camera.lookAt(0, 0, 0);
+
+    if (text) {
+        text.rotation.y = cameraAngle * 0.5;
+        text.position.y = Math.sin(Date.now() * 0.001) * 0.2;
+    }
+
+    particles.forEach(particle => particle.update());
+    renderer.render(scene, camera);
+}
+
+// Event Handlers
+document.querySelectorAll('.color-button').forEach(button => {
+    button.addEventListener('click', function() {
+        selectedColor = this.dataset.color;
+        document.documentElement.style.setProperty('--theme-color', selectedColor);
+        
+        const welcomeScreen = document.getElementById('welcome-screen');
+        welcomeScreen.style.opacity = '0';
+        setTimeout(() => {
+            welcomeScreen.style.display = 'none';
+            initScene();
+        }, 500);
+    });
+});
+
+function setupEventListeners() {
+    window.addEventListener('resize', onWindowResize);
+    window.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+    window.addEventListener('wheel', onWheel);
+    setupModalHandlers();
+}
+
+function setupModalHandlers() {
+    const modal = document.getElementById('modal');
+    const overlay = document.getElementById('modal-overlay');
+    const closeBtn = document.getElementById('close-modal');
+    const meaningBtn = document.getElementById('meaning-button');
+
+    meaningBtn.addEventListener('click', () => {
+        overlay.style.display = 'block';
+        modal.style.display = 'block';
+        setTimeout(() => {
+            overlay.classList.add('active');
+            modal.classList.add('active');
+        }, 10);
+    });
+
+    function closeModal() {
+        modal.classList.remove('active');
+        overlay.classList.remove('active');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            overlay.style.display = 'none';
+        }, 300);
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', closeModal);
+}
+
+function onMouseDown(event) {
+    isDragging = true;
+    mouseStart.x = event.clientX;
+    mouseStart.y = event.clientY;
+}
+
+function onMouseMove(event) {
+    if (!isDragging) return;
+    const deltaX = event.clientX - mouseStart.x;
+    const deltaY = event.clientY - mouseStart.y;
+    targetCameraAngle = cameraAngle - deltaX * 0.01;
+    cameraHeight = Math.max(-10, Math.min(10, cameraHeight + deltaY * 0.05));
+    mouseStart.x = event.clientX;
+    mouseStart.y = event.clientY;
+}
+
+function onMouseUp() {
+    isDragging = false;
+}
+
+function onWheel(event) {
+    cameraRotationRadius = Math.max(10, Math.min(30, cameraRotationRadius - event.deltaY * 0.01));
+}
+
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Disable scrolling with keyboard, mouse, or touch
+  document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+
+  // Prevent touchmove events
+  window.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+  }, { passive: false });
+
+  // Prevent pinch-zoom gestures
+  window.addEventListener('gesturestart', (e) => {
+    e.preventDefault();
+  });
+
+  // Prevent zooming with touch events
+  document.addEventListener('touchstart', (e) => {
+    if (e.touches.length > 1) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  document.addEventListener('touchmove', (e) => {
+    if (e.touches.length > 1) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  // Prevent zooming with keyboard shortcuts
+  window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '=')) {
+      e.preventDefault();
+    }
+  });
+});
+</script>
+<script>
+document.addEventListener('keydown', function (event) {
+    if (event.ctrlKey) {
+        event.preventDefault();
+    }
+});
+
+document.addEventListener('contextmenu', function (event) {
+    event.preventDefault();
+});
+</script>
+
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+</body>
+</html>
