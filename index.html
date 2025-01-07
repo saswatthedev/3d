@@ -6,339 +6,211 @@
     <title>a Gift</title>
     <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;700&family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Montserrat', sans-serif;
-        }
 
-        body {
-            background: #0a0a0a;
-            overflow: hidden;
-            color: #fff;
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
 
-        #scene-container {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            display: none;
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
+body {
+    background: #0a0a0a;
+    overflow: hidden;
+    color: #fff;
+}
 
-        /* Enhanced Loading Screen */
-        .loading-screen {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background: #0a0a0a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            transition: opacity 0.5s ease;
-        }
+#scene-container {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    display: none;
+    opacity: 0;
+    transition: opacity 1s ease;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
 
-        .loader {
-            width: 60px;
-            height: 60px;
-            border: 3px solid transparent;
-            border-top-color: var(--theme-color, #ff69b4);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            position: relative;
-        }
+/* Loading Screen */
+.loading-screen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: #0a0a0a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.8s ease;
+}
 
-        .loader:before, .loader:after {
-            content: '';
-            position: absolute;
-            border: 3px solid transparent;
-            border-radius: 50%;
-        }
+.loader {
+    width: 80px;
+    height: 80px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-left-color: var(--theme-color, #ff69b4);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    filter: drop-shadow(0 0 15px var(--theme-color, #ff69b4));
+}
 
-        .loader:before {
-            top: 5px;
-            left: 5px;
-            right: 5px;
-            bottom: 5px;
-            border-top-color: var(--theme-color, #ff69b4);
-            animation: spin 2s linear infinite;
-        }
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
-        .loader:after {
-            top: 15px;
-            left: 15px;
-            right: 15px;
-            bottom: 15px;
-            border-top-color: var(--theme-color, #ff69b4);
-            animation: spin 1.5s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Welcome Screen */
-        .welcome-screen {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background: #0a0a0a;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            z-index: 900;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
+/* Welcome Screen */
+.welcome-screen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: #0a0a0a;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 900;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
 
         .typing-container {
             position: relative;
-            min-height: 80px;
+            min-height: 160px;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            margin-bottom: 3rem;
+            margin-bottom: 4rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .typing-line {
+            position: relative;
+            height: 60px; /* Fixed height for each line */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            overflow: hidden; /* Prevent text wrapping */
+            white-space: nowrap; /* Keep text in single line */
         }
 
         .typing-text {
-            font-family: 'Bodoni Moda', serif;
-            font-size: 2.8em;
-            white-space: nowrap;
+            font-family: 'Playfair Display', serif;
+            font-size: 3.2em;
             text-align: center;
             opacity: 0;
             transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 0; /* Remove any margin */
+            padding: 0; /* Remove any padding */
+            line-height: 1.2;
         }
 
         .cursor {
             display: inline-block;
-            width: 8px;
-            height: 2.8em;
-            background-color: var(--theme-color, #ff69b4);
-            margin-left: 5px;
+            width: 7px;
+            height: 60px; /* Match line height */
+            background: var(--theme-color, #ff69b4);
+            margin-left: 8px;
             animation: blink 1s infinite;
-            vertical-align: middle;
+            box-shadow: 0 0 15px var(--theme-color, #ff69b4);
+            border-radius: 2px;
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
-        @keyframes blink {
-            50% { opacity: 0; }
-        }
+@keyframes blink {
+    50% { opacity: 0; }
+}
 
 .color-palette {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
+    gap: 2rem;
     opacity: 0;
     transform: translateY(30px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    pointer-events: none; /* This prevents any interaction */
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
 }
 
 .color-palette.active {
-    pointer-events: auto; /* This enables interaction */
+    pointer-events: auto;
 }
 
-        .color-button {
-            padding: 15px 30px;
-            font-size: 1.1rem;
-            background: transparent;
-            border: 2px solid;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            border-radius: 30px;
-            position: relative;
-            overflow: hidden;
-        }
+.color-button {
+    padding: 1.2rem 2.4rem;
+    font-size: 1.1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid;
+    cursor: pointer;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-radius: 30px;
+    position: relative;
+    overflow: hidden;
+    font-weight: 500;
+    backdrop-filter: blur(5px);
+}
 
-        .color-button:before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: currentColor;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0;
-            transition: width 0.6s ease, height 0.6s ease, opacity 0.3s ease;
-        }
+.color-button:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: currentColor;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: all 0.6s ease;
+}
 
-        .color-button:hover:before {
-            width: 200px;
-            height: 200px;
-            opacity: 0.1;
-        }
+.color-button:hover {
+    transform: translateY(-5px);
+    letter-spacing: 3px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+}
 
-        .color-button:hover {
-            transform: translateY(-3px);
-            letter-spacing: 3px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
+.color-button:hover:before {
+    width: 300px;
+    height: 300px;
+    opacity: 0.15;
+}
 
-        /* Main Interface */
-        .interface {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 2;
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
+/* Interface */
+.interface {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 1s ease;
+}
 
-        .meaning-button {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 15px 30px;
-            background: transparent;
-            border: 1px solid rgba(255,105,180,0.3);
-            color: var(--theme-color, #ff69b4);
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 300;
-            font-size: 1rem;
-            pointer-events: auto;
-            border-radius: 30px;
-            backdrop-filter: blur(5px);
-        }
-
-        .meaning-button:hover {
-            transform: translateX(-50%) translateY(-3px);
-            letter-spacing: 3px;
-            background: rgba(255,105,180,0.1);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        /* Enhanced Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0.9);
-            background: rgba(10,10,10,0.95);
-            border: 10px solid rgba(255,105,180,0.3);
-            padding: 40px;
-            border-radius: 20px;
-            z-index: 100;
-            max-width: 500px;
-            width: 90%;
-            opacity: 0;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-        }
-
-        .modal.active {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(0.8);
-        }
-
-        .modal h2 {
-            font-family: 'Bodoni Moda', serif;
-            color: var(--theme-color, #ff69b4);
-            font-size: 2.2em;
-            margin-bottom: 20px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
-
-        .modal p {
-            color: rgba(255,255,255,0.9);
-            line-height: 1.8;
-            margin-bottom: 20px;
-            font-size: 1.1em;
-        }
-
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 99;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            backdrop-filter: blur(3px);
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-        }
-
-        .close-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: transparent;
-            border: none;
-            color: var(--theme-color, #ff69b4);
-            font-size: 1.8em;
-            cursor: pointer;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-
-        .close-button:hover {
-            transform: rotate(90deg);
-            background: rgba(255,105,180,0.1);
-        }
-
-        @media (max-width: 768px) {
-            .typing-text {
-                font-size: 2em;
-                padding: 0 20px;
-            }
-
-            .color-palette {
-                grid-template-columns: repeat(2, 1fr);
-                padding: 0 20px;
-                gap: 1rem;
-            }
-
-            .color-button {
-                padding: 12px 24px;
-                font-size: 0.9rem;
-            }
-
-            .modal {
-                padding: 30px;
-            }
-
-            .modal h2 {
-                font-size: 1.8em;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .typing-text {
-                font-size: 1.6em;
-            }
-
-            .color-palette {
-                grid-template-columns: 1fr;
-            }
-        }
 .interface p {
     position: fixed;
     top: 20px;
@@ -357,14 +229,162 @@
     transition: opacity 0.3s ease;
 }
 
-.interface p:hover {
-    opacity: 0.9;
+.meaning-button {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 30px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--theme-color, #ff69b4);
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 300;
+    font-size: 1rem;
+    pointer-events: auto;
+    border-radius: 30px;
+    backdrop-filter: blur(5px);
 }
 
+.meaning-button:hover {
+    transform: translateX(-50%) translateY(-3px);
+    letter-spacing: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Modal */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 99;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    backdrop-filter: blur(3px);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: rgba(10, 10, 10, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    border-radius: 20px;
+    z-index: 100;
+    max-width: 500px;
+    width: 90%;
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+}
+
+.modal.active {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.modal-overlay.active {
+    opacity: 1;
+}
+
+.modal h2 {
+    font-family: 'Playfair Display', serif;
+    color: var(--theme-color, #ff69b4);
+    font-size: 2.2em;
+    margin-bottom: 20px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.modal p {
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.8;
+    margin-bottom: 20px;
+    font-size: 1.1em;
+}
+
+.close-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    color: var(--theme-color, #ff69b4);
+    font-size: 1.8em;
+    cursor: pointer;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.close-button:hover {
+    transform: rotate(90deg);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Media Queries */
 @media (max-width: 768px) {
+    .typing-text {
+        font-size: 2.4em;
+    }
+
+    .color-palette {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .color-button {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+    }
+
+    .typing-container {
+        margin-bottom: 3rem;
+        padding: 1.5rem;
+    }
+
     .interface p {
         font-size: 0.8rem;
         padding: 8px 16px;
+    }
+
+    .modal {
+        padding: 30px;
+    }
+
+    .modal h2 {
+        font-size: 1.8em;
+    }
+}
+
+@media (max-width: 480px) {
+    .typing-text {
+        font-size: 2em;
+    }
+
+    .color-palette {
+        grid-template-columns: 1fr;
+        width: 90%;
+    }
+
+    .color-button {
+        padding: 0.8rem 1.6rem;
     }
 }
 
@@ -412,6 +432,7 @@
     </div>
 
 <script>
+    
 // Global variables for scene management
 let scene, camera, renderer;
 let text, particles = [];
@@ -427,17 +448,52 @@ let selectedColor = '#ff69b4'; // Default color
 
 // Configuration
 const config = {
-    welcomeText: "Welcome Simron, choose your fav color",
+    welcomeText: "Welcome Simron,\nchoose your fav color",
     typingInitialDelay: 1000,
     minTypingDelay: 10,
     maxTypingDelay: 100,
-    showColorPaletteDelay: 500
+    showColorPaletteDelay: 500,
+    mobile: {
+        cameraRotationRadius: 30,
+        minRadius: 20,
+        maxRadius: 40
+    },
+    desktop: {
+        cameraRotationRadius: 20,
+        minRadius: 10,
+        maxRadius: 30
+    }
 };
+
+// Device detection
+function isMobile() {
+    return window.innerWidth <= 768 || ('ontouchstart' in window);
+}
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', initializeApplication);
 
 function initializeApplication() {
+    // Prevent zoom and scroll
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.height = '100%';
+    
+    // Prevent zoom gestures
+    document.addEventListener('touchstart', (e) => {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
+    // Prevent bounce effect on iOS
+    document.body.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
     setTimeout(() => {
         document.getElementById('loading-screen').style.opacity = '0';
         setTimeout(() => {
@@ -468,7 +524,7 @@ function showWelcomeScreen() {
             setTimeout(() => {
                 colorPalette.style.opacity = '1';
                 colorPalette.style.transform = 'translateY(0)';
-                colorPalette.classList.add('active'); // Enable interaction after typing
+                colorPalette.classList.add('active');
             }, 500);
         }
     }
@@ -483,7 +539,7 @@ function initScene() {
     loadingScreen.style.opacity = '1';
 
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x000000, 0.015); // Darker fog
+    scene.fog = new THREE.FogExp2(0x000000, 0.015);
     
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     
@@ -492,17 +548,21 @@ function initScene() {
         alpha: true
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setClearColor(0x000000, 1); // Set black background
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 1);
     
     const container = document.getElementById('scene-container');
     container.appendChild(renderer.domElement);
+
+    // Set initial camera position based on device
+    cameraRotationRadius = isMobile() ? config.mobile.cameraRotationRadius : config.desktop.cameraRotationRadius;
 
     createBackground();
     setupLighting();
     camera.position.z = cameraRotationRadius;
     loadText();
     setupEventListeners();
+    optimizeForDevice();
     
     container.style.display = 'block';
     setTimeout(() => {
@@ -519,7 +579,6 @@ function initScene() {
 }
 
 function createBackground() {
-    // Create gradient background sphere
     const geometry = new THREE.SphereGeometry(100, 64, 64);
     const vertexShader = `
         varying vec3 vPosition;
@@ -548,10 +607,11 @@ function createBackground() {
     const backgroundSphere = new THREE.Mesh(geometry, material);
     scene.add(backgroundSphere);
 
-    // Add stars
+    // Add stars with optimized count for mobile
+    const starCount = isMobile() ? 2500 : 5000;
     const starGeometry = new THREE.BufferGeometry();
     const starVertices = [];
-    for (let i = 0; i < 5000; i++) {
+    for (let i = 0; i < starCount; i++) {
         const r = 90;
         const theta = 2 * Math.PI * Math.random();
         const phi = Math.acos(2 * Math.random() - 1);
@@ -575,21 +635,17 @@ function createBackground() {
 }
 
 function setupLighting() {
-    // Ambient light for overall illumination
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
     scene.add(ambientLight);
 
-    // Main directional light
     const mainLight = new THREE.DirectionalLight(0xffffff, 1);
     mainLight.position.set(1, 1, 1);
     scene.add(mainLight);
 
-    // Back light for depth
     const backLight = new THREE.DirectionalLight(0xffffff, 0.5);
     backLight.position.set(-1, 1, -1);
     scene.add(backLight);
 
-    // Add a subtle rim light
     const rimLight = new THREE.DirectionalLight(0xffffff, 0.3);
     rimLight.position.set(0, 0, -1);
     scene.add(rimLight);
@@ -598,7 +654,7 @@ function setupLighting() {
 function loadText() {
     const loader = new THREE.FontLoader();
     loader.load('https://threejs.org/examples/fonts/optimer_bold.typeface.json', function(font) {
-        const textGeometry = new THREE.TextGeometry('Simron :)', {
+        const textGeometry = new THREE.TextGeometry('Phuong Vy :)', {
             font: font,
             size: 4,
             height: 1.5,
@@ -610,7 +666,6 @@ function loadText() {
             bevelSegments: 8
         });
 
-        // Create materials for different parts of the text
         const frontMaterial = new THREE.MeshPhysicalMaterial({
             color: selectedColor,
             emissive: selectedColor,
@@ -629,7 +684,6 @@ function loadText() {
             reflectivity: 0.5
         });
 
-        // Apply materials to text
         text = new THREE.Mesh(textGeometry, [frontMaterial, sideMaterial]);
         textGeometry.center();
         scene.add(text);
@@ -637,15 +691,6 @@ function loadText() {
         createParticles();
         animate();
     });
-}
-
-function createParticles() {
-    particles.forEach(particle => scene.remove(particle.mesh));
-    particles = [];
-
-    for (let i = 0; i < 200; i++) {
-        particles.push(new Particle());
-    }
 }
 
 class Particle {
@@ -686,10 +731,19 @@ class Particle {
 
     update() {
         this.mesh.position.add(this.velocity);
-        
         if (this.mesh.position.length() > 30) {
             this.reset();
         }
+    }
+}
+
+function createParticles() {
+    particles.forEach(particle => scene.remove(particle.mesh));
+    particles = [];
+
+    const particleCount = isMobile() ? 100 : 200;
+    for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
     }
 }
 
@@ -701,42 +755,81 @@ function animate() {
     }
 
     cameraAngle += (targetCameraAngle - cameraAngle) * 0.1;
-    camera.position.x = cameraRotationRadius * Math.sin(cameraAngle);
-    camera.position.z = cameraRotationRadius * Math.cos(cameraAngle);
+    
+    const sinAngle = Math.sin(cameraAngle);
+    const cosAngle = Math.cos(cameraAngle);
+    
+    camera.position.x = cameraRotationRadius * sinAngle;
+    camera.position.z = cameraRotationRadius * cosAngle;
     camera.position.y = cameraHeight;
     camera.lookAt(0, 0, 0);
 
     if (text) {
         text.rotation.y = cameraAngle * 0.5;
-        text.position.y = Math.sin(Date.now() * 0.001) * 0.2;
+        text.position.y = Math.sin(Date.now() * 0.0005) * 0.2;
     }
 
     particles.forEach(particle => particle.update());
     renderer.render(scene, camera);
 }
 
-// Event Handlers
-document.querySelectorAll('.color-button').forEach(button => {
-    button.addEventListener('click', function() {
-        selectedColor = this.dataset.color;
-        document.documentElement.style.setProperty('--theme-color', selectedColor);
-        
-        const welcomeScreen = document.getElementById('welcome-screen');
-        welcomeScreen.style.opacity = '0';
-        setTimeout(() => {
-            welcomeScreen.style.display = 'none';
-            initScene();
-        }, 500);
-    });
-});
-
 function setupEventListeners() {
     window.addEventListener('resize', onWindowResize);
-    window.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
-    window.addEventListener('wheel', onWheel);
+    
+    // Mouse events
+    window.addEventListener('mousedown', onPointerDown);
+    window.addEventListener('mousemove', onPointerMove);
+    window.addEventListener('mouseup', onPointerUp);
+    
+    // Touch events
+    window.addEventListener('touchstart', onPointerDown, { passive: false });
+    window.addEventListener('touchmove', onPointerMove, { passive: false });
+    window.addEventListener('touchend', onPointerUp, { passive: false });
+    
+    window.addEventListener('wheel', onWheel, { passive: false });
     setupModalHandlers();
+}
+
+function onPointerDown(event) {
+    event.preventDefault();
+    isDragging = true;
+    const point = event.touches ? event.touches[0] : event;
+    mouseStart.x = point.clientX;
+    mouseStart.y = point.clientY;
+}
+
+function onPointerMove(event) {
+    if (!isDragging) return;
+    event.preventDefault();
+    const point = event.touches ? event.touches[0] : event;
+    const deltaX = point.clientX - mouseStart.x;
+    const deltaY = point.clientY - mouseStart.y;
+    
+    targetCameraAngle = cameraAngle - deltaX * 0.01;
+    cameraHeight = Math.max(-10, Math.min(10, cameraHeight + deltaY * 0.05));
+    
+    mouseStart.x = point.clientX;
+    mouseStart.y = point.clientY;
+}
+
+function onPointerUp(event) {
+    event.preventDefault();
+    isDragging = false;
+}
+
+function onWheel(event) {
+    event.preventDefault();
+    const limits = isMobile() ? config.mobile : config.desktop;
+    cameraRotationRadius = Math.max(
+        limits.minRadius,
+        Math.min(limits.maxRadius, cameraRotationRadius - event.deltaY * 0.01)
+    );
+}
+
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 function setupModalHandlers() {
@@ -767,86 +860,53 @@ function setupModalHandlers() {
     overlay.addEventListener('click', closeModal);
 }
 
-function onMouseDown(event) {
-    isDragging = true;
-    mouseStart.x = event.clientX;
-    mouseStart.y = event.clientY;
-}
-
-function onMouseMove(event) {
-    if (!isDragging) return;
-    const deltaX = event.clientX - mouseStart.x;
-    const deltaY = event.clientY - mouseStart.y;
-    targetCameraAngle = cameraAngle - deltaX * 0.01;
-    cameraHeight = Math.max(-10, Math.min(10, cameraHeight + deltaY * 0.05));
-    mouseStart.x = event.clientX;
-    mouseStart.y = event.clientY;
-}
-
-function onMouseUp() {
-    isDragging = false;
-}
-
-function onWheel(event) {
-    cameraRotationRadius = Math.max(10, Math.min(30, cameraRotationRadius - event.deltaY * 0.01));
-}
-
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  // Disable scrolling with keyboard, mouse, or touch
-  document.body.style.overflow = 'hidden';
-  document.body.style.position = 'fixed';
-
-  // Prevent touchmove events
-  window.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-  }, { passive: false });
-
-  // Prevent pinch-zoom gestures
-  window.addEventListener('gesturestart', (e) => {
-    e.preventDefault();
-  });
-
-  // Prevent zooming with touch events
-  document.addEventListener('touchstart', (e) => {
-    if (e.touches.length > 1) {
-      e.preventDefault();
+function optimizeForDevice() {
+    if (isMobile()) {
+        // Reduce particle count
+        const particleCount = 100;
+        particles.forEach(particle => scene.remove(particle.mesh));
+        particles = [];
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+        
+        // Optimize renderer
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        
+        // Adjust camera for mobile
+        cameraRotationRadius = config.mobile.cameraRotationRadius;
     }
-  }, { passive: false });
+}
 
-  document.addEventListener('touchmove', (e) => {
-    if (e.touches.length > 1) {
-      e.preventDefault();
-    }
-  }, { passive: false });
-
-  // Prevent zooming with keyboard shortcuts
-  window.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '=')) {
-      e.preventDefault();
-    }
-  });
-});
-</script>
-<script>
-document.addEventListener('keydown', function (event) {
-    if (event.ctrlKey) {
-        event.preventDefault();
-    }
+// Color button event listeners
+document.querySelectorAll('.color-button').forEach(button => {
+    button.addEventListener('click', function() {
+        selectedColor = this.dataset.color;
+        document.documentElement.style.setProperty('--theme-color', selectedColor);
+        
+        const welcomeScreen = document.getElementById('welcome-screen');
+        welcomeScreen.style.opacity = '0';
+        setTimeout(() => {
+            welcomeScreen.style.display = 'none';
+            initScene();
+        }, 500);
+    });
 });
 
-document.addEventListener('contextmenu', function (event) {
-    event.preventDefault();
-});
-</script>
+// // Prevent context menu
+// document.addEventListener('contextmenu', function(event) {
+//     event.preventDefault();
+// });
 
+// // Prevent keyboard shortcuts
+// document.addEventListener('keydown', function(event) {
+//     if (event.ctrlKey || event.metaKey) {
+//         event.preventDefault();
+//     }
+// });
+
+
+</script>
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
