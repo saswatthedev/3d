@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>a Gift</title>
+    <title>a small Gift</title>
     <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;700&family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
 
@@ -424,14 +424,15 @@ body {
     </div>
 
     <!-- Modal -->
-    <div class="modal-overlay" id="modal-overlay"></div>
-    <div class="modal" id="modal">
-        <h2>Simron</h2>
-        <p>Simron, derived from the Hebrew name Simronh, carries the noble meaning of "princess" or "lady of nobility." Throughout history, this name has been associated with grace, wisdom, and inner strength.</p>
-        <p>In various cultures, Simron represents different beautiful meanings: in Persian, it means "pure and excellent"; in Arabic traditions, it symbolizes joy and delight; and in its Hebrew origins, it represents a woman of high rank and spiritual significance.</p>
-        <h3><bold>Made by Saswat :)</bold></h3>
-        <button class="close-button" id="close-modal">&times;</button>
-    </div>
+<div class="modal-overlay" id="modal-overlay"></div>
+<div class="modal" id="modal">
+    <h2>Vie</h2>
+    <p>Vie, derived from the Hebrew name Vieh, carries the noble meaning of "princess" or "lady of nobility." Throughout history, this name has been associated with grace, wisdom, and inner strength.</p>
+    <p>In various cultures, Vie represents different beautiful meanings: in Persian, it means "pure and excellent"; in Arabic traditions, it symbolizes joy and delight; and in its Hebrew origins, it represents a woman of high rank and spiritual significance.</p>
+    <h3><strong>Made by Saswat :)</strong></h3>
+    <button class="close-button" id="close-modal">&times;</button>
+</div>
+
 
 <script>
     
@@ -450,7 +451,7 @@ let selectedColor = '#ff69b4'; // Default color
 
 // Configuration
 const config = {
-    welcomeText: "Welcome Simron,\nchoose your fav color",
+    welcomeText: "Welcome Vie,\nchoose your fav color",
     typingInitialDelay: 1000,
     minTypingDelay: 10,
     maxTypingDelay: 100,
@@ -594,9 +595,9 @@ function createBackground() {
         varying vec3 vPosition;
         void main() {
             float y = normalize(vPosition).y * 0.5 + 0.5;
-            vec3 skyBlue = vec3(0.0, 0.1, 0.2);
-            vec3 black = vec3(0.0, 0.0, 0.0);
-            gl_FragColor = vec4(mix(black, skyBlue, y * 0.5), 1.0);
+            vec3 skyBlue = vec3(0.1, 0.2, 0.3);    // Made lighter by increasing values
+            vec3 black = vec3(0.05, 0.05, 0.05);   // Made lighter by using dark grey instead of black
+            gl_FragColor = vec4(mix(black, skyBlue, y * 0.7), 1.0);  // Increased mix factor from 0.5 to 0.7
         }
     `;
 
@@ -609,7 +610,7 @@ function createBackground() {
     const backgroundSphere = new THREE.Mesh(geometry, material);
     scene.add(backgroundSphere);
 
-    // Add stars with optimized count for mobile
+    // Add stars with brighter values
     const starCount = isMobile() ? 2500 : 5000;
     const starGeometry = new THREE.BufferGeometry();
     const starVertices = [];
@@ -626,16 +627,15 @@ function createBackground() {
     
     const starMaterial = new THREE.PointsMaterial({
         color: 0xFFFFFF,
-        size: 0.2,
+        size: 0.25,         // Slightly bigger stars
         transparent: true,
-        opacity: 0.8,
+        opacity: 0.9,       // More visible stars
         sizeAttenuation: true
     });
 
     const stars = new THREE.Points(starGeometry, starMaterial);
     scene.add(stars);
 }
-
 function setupLighting() {
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Changed from 0.3 to 0.5
     scene.add(ambientLight);
@@ -656,7 +656,7 @@ function setupLighting() {
 function loadText() {
     const loader = new THREE.FontLoader();
     loader.load('https://threejs.org/examples/fonts/optimer_bold.typeface.json', function(font) {
-        const textGeometry = new THREE.TextGeometry('Phuong Vy :)', {
+        const textGeometry = new THREE.TextGeometry('Vie :)', {
             font: font,
             size: 4,
             height: 1.5,
@@ -800,16 +800,31 @@ function onPointerDown(event) {
     mouseStart.y = point.clientY;
 }
 
+const controlSensitivity = {
+    mobile: {
+        rotation: 0.03,    // Controls left/right rotation speed
+        height: 0.15      // Controls up/down movement speed
+    },
+    desktop: {
+        rotation: 0.015,   // Less sensitive for desktop
+        height: 0.08      // Less sensitive for desktop
+    }
+};
+
 function onPointerMove(event) {
     if (!isDragging) return;
     event.preventDefault();
+    
     const point = event.touches ? event.touches[0] : event;
     const deltaX = point.clientX - mouseStart.x;
     const deltaY = point.clientY - mouseStart.y;
     
-    // Increase these multipliers
-    targetCameraAngle = cameraAngle - deltaX * 0.02; // Changed from 0.01 to 0.02
-    cameraHeight = Math.max(-10, Math.min(10, cameraHeight + deltaY * 0.1)); // Changed from 0.05 to 0.1
+    // Get sensitivity based on device type
+    const sensitivity = event.touches ? controlSensitivity.mobile : controlSensitivity.desktop;
+    
+    // Apply sensitivity to camera movement
+    targetCameraAngle = cameraAngle - deltaX * sensitivity.rotation;
+    cameraHeight = Math.max(-10, Math.min(10, cameraHeight + deltaY * sensitivity.height));
     
     mouseStart.x = point.clientX;
     mouseStart.y = point.clientY;
@@ -896,17 +911,17 @@ document.querySelectorAll('.color-button').forEach(button => {
     });
 });
 
-// // Prevent context menu
-// document.addEventListener('contextmenu', function(event) {
-//     event.preventDefault();
-// });
+// Prevent context menu
+document.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
+});
 
-// // Prevent keyboard shortcuts
-// document.addEventListener('keydown', function(event) {
-//     if (event.ctrlKey || event.metaKey) {
-//         event.preventDefault();
-//     }
-// });
+// Prevent keyboard shortcuts
+document.addEventListener('keydown', function(event) {
+    if (event.ctrlKey || event.metaKey) {
+        event.preventDefault();
+    }
+});
 
 
 </script>
